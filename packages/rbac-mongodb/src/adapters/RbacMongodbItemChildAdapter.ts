@@ -1,28 +1,27 @@
-import RbacItemChild from '../models/RbacItemChild';
+import RbacItemChild, { RbacItemChildDocument } from '../models/RbacItemChild';
 
 export default class RbacMongodbItemChildAdapter {
-  constructor() {
-  }
+  constructor() {}
 
-  async store(rbacItemChildren) {
-    await RbacItemChild.remove({});
+  async store(rbacItemChildren: RbacItemChildDocument[]): Promise<RbacItemChildDocument[]> {
+    await RbacItemChild.deleteMany({});
     return await RbacItemChild.create(rbacItemChildren);
   }
 
-  async load() {
+  async load(): Promise<RbacItemChildDocument[]> {
     return await RbacItemChild.find({});
   }
 
-  async create(parent, child) {
-    const currcentItemChild = await RbacItemChild.findOne({ parent: parent, child: child });
-    if (currcentItemChild) {
+  async create(parent: string, child: string): Promise<RbacItemChildDocument> {
+    const currentItemChild = await RbacItemChild.findOne({ parent, child });
+    if (currentItemChild) {
       throw new Error(`Association of ${parent} and ${child} already exists.`);
     }
 
     return await RbacItemChild.create({ parent, child });
   }
 
-  async findByParent(parent) {
-    return await RbacItemChild.find({parent});
+  async findByParent(parent: string): Promise<RbacItemChildDocument[]> {
+    return await RbacItemChild.find({ parent });
   }
 }

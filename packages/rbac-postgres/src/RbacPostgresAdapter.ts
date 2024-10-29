@@ -1,86 +1,99 @@
-import RbacPostgresAssignmentAdapter from './adapters/RbacPostgresAssignmentAdapter'
-import RbacPostgresItemAdapter from './adapters/RbacPostgresItemAdapter'
-import RbacPostgresItemChildAdapter from './adapters/RbacPostgresItemChildAdapter'
-import RbacPostgresRuleAdapter from './adapters/RbacPostgresRuleAdapter'
+import RbacPostgresAssignmentAdapter from './adapters/RbacPostgresAssignmentAdapter';
+import RbacPostgresItemAdapter from './adapters/RbacPostgresItemAdapter';
+import RbacPostgresItemChildAdapter from './adapters/RbacPostgresItemChildAdapter';
+import RbacPostgresRuleAdapter from './adapters/RbacPostgresRuleAdapter';
 
 import RbacAssignment from './models/RbacAssignment';
 import RbacItem from './models/RbacItem';
 import RbacItemChild from './models/RbacItemChild';
 import RbacRule from './models/RbacRule';
 
+interface RbacHierarchy {
+  rbacAssignments: any[];
+  rbacItems: any[];
+  rbacItemChildren: any[];
+  rbacRules: any[];
+}
+
 class RbacPostgresAdapter {
-  constructor({ knex }) {
+  private assignmentAdapter: RbacPostgresAssignmentAdapter;
+  private itemAdapter: RbacPostgresItemAdapter;
+  private itemChildAdapter: RbacPostgresItemChildAdapter;
+  private ruleAdapter: RbacPostgresRuleAdapter;
+
+  constructor({ knex }: { knex: any }) {
     RbacAssignment.knex(knex);
     RbacItem.knex(knex);
     RbacItemChild.knex(knex);
     RbacRule.knex(knex);
+
     this.assignmentAdapter = new RbacPostgresAssignmentAdapter();
     this.itemAdapter = new RbacPostgresItemAdapter();
     this.itemChildAdapter = new RbacPostgresItemChildAdapter();
     this.ruleAdapter = new RbacPostgresRuleAdapter();
   }
 
-  async store(rbacHierarchy) {
+  async store(rbacHierarchy: RbacHierarchy): Promise<void> {
     await this.assignmentAdapter.store(rbacHierarchy.rbacAssignments);
     await this.itemAdapter.store(rbacHierarchy.rbacItems);
     await this.itemChildAdapter.store(rbacHierarchy.rbacItemChildren);
     await this.ruleAdapter.store(rbacHierarchy.rbacRules);
   }
 
-  async load() {
+  async load(): Promise<RbacHierarchy> {
     return {
       rbacAssignments: await this.assignmentAdapter.load(),
       rbacItems: await this.itemAdapter.load(),
       rbacItemChildren: await this.itemChildAdapter.load(),
-      rbacRules: await this.ruleAdapter.load()
+      rbacRules: await this.ruleAdapter.load(),
     };
   }
 
-  async findAllAssignments() {
+  async findAllAssignments(): Promise<any[]> {
     return await this.assignmentAdapter.load();
   }
 
-  async findAllItems() {
+  async findAllItems(): Promise<any[]> {
     return await this.itemAdapter.load();
   }
 
-  async findAllItemsChild() {
+  async findAllItemsChild(): Promise<any[]> {
     return await this.itemChildAdapter.load();
   }
 
-  async findAllRules() {
+  async findAllRules(): Promise<any[]> {
     return await this.ruleAdapter.load();
   }
 
   // Core for checkAccess
 
-  async findAssignmentsByUserId(userId) {
+  async findAssignmentsByUserId(userId: string): Promise<any[]> {
     return await this.assignmentAdapter.findByUserId(userId);
   }
 
-  async findItem(name) {
+  async findItem(name: string): Promise<any> {
     return await this.itemAdapter.find(name);
   }
 
-  async findItemChildrenByParent(name) {
+  async findItemChildrenByParent(name: string): Promise<any[]> {
     return await this.itemChildAdapter.findByParent(name);
   }
 
   // Core for management
 
-  async createAssignment(userId, role) {
+  async createAssignment(userId: string, role: string): Promise<any> {
     return await this.assignmentAdapter.create(userId, role);
   }
 
-  async findAssignment(userId, role) {
+  async findAssignment(userId: string, role: string): Promise<any> {
     return await this.assignmentAdapter.find(userId, role);
   }
 
-  async findRoles() {
+  async findRoles(): Promise<any[]> {
     return await this.itemAdapter.findByType('role');
   }
 
-  async deleteAssignment(userId, role) {
+  async deleteAssignment(userId: string, role?: string): Promise<any> {
     if (role) {
       return await this.assignmentAdapter.delete(userId, role);
     }
@@ -90,18 +103,17 @@ class RbacPostgresAdapter {
 
   // Management
 
-  async createItem(name, type) {
+  async createItem(name: string, type: string): Promise<any> {
     return await this.itemAdapter.create(name, type);
   }
 
-  async createItemChild(parent, child) {
+  async createItemChild(parent: string, child: string): Promise<any> {
     return await this.itemChildAdapter.create(parent, child);
   }
 
-  async createRule(name) {
+  async createRule(name: string): Promise<any> {
     return await this.ruleAdapter.create(name);
   }
 }
 
 export default RbacPostgresAdapter;
-

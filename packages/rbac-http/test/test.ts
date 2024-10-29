@@ -1,10 +1,15 @@
-const assert = require('assert');
-const express = require('express');
+import * as assert from 'assert';
+import express from 'express';
 
-const { RbacHttpAssignmentAdapter } = require("../dist");
-const { RbacHttpItemAdapter } = require("../dist");
-const { RbacHttpItemChildAdapter } = require("../dist");
-const { RbacHttpRuleAdapter } = require("../dist");
+// @ts-ignore
+import { RbacHttpAssignmentAdapter } from "../dist";
+// @ts-ignore
+import { RbacHttpItemAdapter } from "../dist";
+// @ts-ignore
+import { RbacHttpItemChildAdapter } from "../dist";
+// @ts-ignore
+import { RbacHttpRuleAdapter } from "../dist";
+// @ts-ignore
 import {RbacHttpAdapter} from "../dist";
 
 describe('RbacHttpAssignmentAdapter', () => {

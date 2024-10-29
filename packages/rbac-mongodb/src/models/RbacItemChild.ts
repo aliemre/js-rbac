@@ -1,14 +1,27 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Schema, Model } from 'mongoose';
 
-const RbacItemChildSchema = mongoose.Schema({
+interface RbacItemChild extends Document {
+  parent: string;
+  child: string;
+}
+
+const RbacItemChildSchema: Schema<RbacItemChild> = new Schema({
   parent: {
     type: String,
-    ref: 'RbacItem'
+    ref: 'RbacItem',
+    required: true
   },
   child: {
     type: String,
-    ref: 'RbacItem'
+    ref: 'RbacItem',
+    required: true
   }
 });
 
-export default mongoose.model('RbacItemChild', RbacItemChildSchema, 'RbacItemChild');
+const RbacItemChildModel: Model<RbacItemChild> = mongoose.model<RbacItemChild>(
+  'RbacItemChild',
+  RbacItemChildSchema,
+  'RbacItemChild'
+);
+
+export default RbacItemChildModel;

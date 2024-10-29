@@ -1,6 +1,7 @@
-const assert = require('assert');
+import * as assert from 'assert';
 
-const {RbacInMemoryAssignmentAdapter} = require("../dist");
+// @ts-ignore
+import {RbacInMemoryAssignmentAdapter} from "../dist";
 
 const rbacGraph = {
   rbacAssignment: [],

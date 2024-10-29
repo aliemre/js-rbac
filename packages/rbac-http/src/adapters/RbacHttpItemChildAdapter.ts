@@ -1,19 +1,36 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
+
+interface RbacHttpConfig {
+  baseUrl: string;
+  headers: Record<string, string>;
+  withCredentials?: boolean;
+}
+
+interface RbacItemChild {
+  parent: string;
+  child: string;
+}
 
 export default class RbacHttpItemChildAdapter {
-  constructor(config) {
+  private config: RbacHttpConfig;
+
+  constructor(config: RbacHttpConfig) {
     this.config = config;
   }
 
-  async store(rbacItemChildren) {
+  async store(rbacItemChildren: RbacItemChild[]): Promise<any> {
     try {
-      const response = await axios.post(`${this.config.baseUrl}/rbac/item-children`, { rbacItemChildren }, {
-        headers: this.config.headers,
-        withCredentials: this.config.withCredentials,
-      });
+      const response: AxiosResponse<any> = await axios.post(
+        `${this.config.baseUrl}/rbac/item-children`,
+        { rbacItemChildren },
+        {
+          headers: this.config.headers,
+          withCredentials: this.config.withCredentials,
+        }
+      );
       return response.data;
-    } catch (error) {
-      if (error.response.data.message) {
+    } catch (error: any) {
+      if (error.response?.data?.message) {
         throw new Error(error.response.data.message);
       } else {
         throw new Error("Unknown error.");
@@ -21,15 +38,18 @@ export default class RbacHttpItemChildAdapter {
     }
   }
 
-  async load() {
+  async load(): Promise<any> {
     try {
-      const response = await axios.get(`${this.config.baseUrl}/rbac/item-children`, {
-        headers: this.config.headers,
-        withCredentials: this.config.withCredentials,
-      });
+      const response: AxiosResponse<any> = await axios.get(
+        `${this.config.baseUrl}/rbac/item-children`,
+        {
+          headers: this.config.headers,
+          withCredentials: this.config.withCredentials,
+        }
+      );
       return response.data;
-    } catch (error) {
-      if (error.response.data.message) {
+    } catch (error: any) {
+      if (error.response?.data?.message) {
         throw new Error(error.response.data.message);
       } else {
         throw new Error("Unknown error.");
@@ -37,15 +57,19 @@ export default class RbacHttpItemChildAdapter {
     }
   }
 
-  async create(parent, child) {
+  async create(parent: string, child: string): Promise<any> {
     try {
-      const response = await axios.post(`${this.config.baseUrl}/rbac/item-children`, { parent, child }, {
-        headers: this.config.headers,
-        withCredentials: this.config.withCredentials,
-      });
+      const response: AxiosResponse<any> = await axios.post(
+        `${this.config.baseUrl}/rbac/item-children`,
+        { parent, child },
+        {
+          headers: this.config.headers,
+          withCredentials: this.config.withCredentials,
+        }
+      );
       return response.data;
-    } catch (error) {
-      if (error.response.data.message) {
+    } catch (error: any) {
+      if (error.response?.data?.message) {
         throw new Error(error.response.data.message);
       } else {
         throw new Error("Unknown error.");
@@ -53,15 +77,18 @@ export default class RbacHttpItemChildAdapter {
     }
   }
 
-  async findByParent(parent) {
+  async findByParent(parent: string): Promise<any> {
     try {
-      const response = await axios.get(`${this.config.baseUrl}/rbac/item-children/${parent}`, {
-        headers: this.config.headers,
-        withCredentials: this.config.withCredentials,
-      });
+      const response: AxiosResponse<any> = await axios.get(
+        `${this.config.baseUrl}/rbac/item-children/${parent}`,
+        {
+          headers: this.config.headers,
+          withCredentials: this.config.withCredentials,
+        }
+      );
       return response.data;
-    } catch (error) {
-      if (error.response.data.message) {
+    } catch (error: any) {
+      if (error.response?.data?.message) {
         throw new Error(error.response.data.message);
       } else {
         throw new Error("Unknown error.");

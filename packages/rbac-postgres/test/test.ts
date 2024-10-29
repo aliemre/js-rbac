@@ -1,5 +1,5 @@
-const fs = require('fs');
-const { expect } = require('chai');
+import * as fs from 'fs';
+import { expect } from 'chai';
 
 const { RbacPostgresAssignmentAdapter } = require('../dist');
 const { RbacPostgresItemAdapter } = require('../dist');
@@ -32,7 +32,7 @@ before(async () => {
       database: 'rbac_postgres_test'
     }
   });
-  await knex.raw(fs.readFileSync('./data/tables.sql', 'UTF-8'));
+  await knex.raw(fs.readFileSync('./data/tables.sql', { encoding: 'utf8' }));
   new RbacPostgresAdapter({ knex });
 });
 
@@ -93,14 +93,14 @@ describe('RbacPostgresItemAdapter', () => {
 
 describe('RbacPostgresAssignmentAdapter', () => {
   const rbacAssignments = [];
-  const rbacAssignmet = {};
+  const rbacAssignment = { userId: '', role: '' };
 
   const timeout = 2000;
 
   it('should store many assignments', async () => {
     rbacAssignments.push({ userId: 'user1', role: 'admin' });
     rbacAssignments.push({ userId: 'user2', role: 'manager' });
-    Object.assign(rbacAssignmet, {
+    Object.assign(rbacAssignment, {
       userId: 'user3',
       role: 'manager'
     });
@@ -124,27 +124,27 @@ describe('RbacPostgresAssignmentAdapter', () => {
 
   it('should create single assignment', async () => {
     const adapter = new RbacPostgresAssignmentAdapter();
-    const result = await adapter.create(rbacAssignmet.userId, rbacAssignmet.role);
-    expect(result).to.be.an('object').that.include(rbacAssignmet);
+    const result = await adapter.create(rbacAssignment.userId, rbacAssignment.role);
+    expect(result).to.be.an('object').that.include(rbacAssignment);
   }).timeout(timeout);
 
   it('should find single assignments', async () => {
     const adapter = new RbacPostgresAssignmentAdapter();
-    const result = await adapter.find(rbacAssignmet.userId, rbacAssignmet.role);
-    expect(result).to.be.an('object').that.include(rbacAssignmet);
+    const result = await adapter.find(rbacAssignment.userId, rbacAssignment.role);
+    expect(result).to.be.an('object').that.include(rbacAssignment);
   }).timeout(timeout);
 
   it('should find all assignments by user', async () => {
     const adapter = new RbacPostgresAssignmentAdapter();
-    const result = await adapter.findByUserId(rbacAssignmet.userId);
+    const result = await adapter.findByUserId(rbacAssignment.userId);
     expect(result).to.be.an('array').that.have.length(1);
-    expect(result[0]).to.include(rbacAssignmet);
+    expect(result[0]).to.include(rbacAssignment);
   }).timeout(timeout);
 
   it('should delete single assignments', async () => {
     const adapter = new RbacPostgresAssignmentAdapter();
-    const result = await adapter.delete(rbacAssignmet.userId, rbacAssignmet.role);
-    expect(result).to.be.an('object').that.include(rbacAssignmet);
+    const result = await adapter.delete(rbacAssignment.userId, rbacAssignment.role);
+    expect(result).to.be.an('object').that.include(rbacAssignment);
     const remainData = await adapter.load();
     expect(remainData).to.be.an('array').that.have.length(2);
   }).timeout(timeout);

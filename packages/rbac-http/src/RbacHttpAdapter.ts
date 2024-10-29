@@ -3,8 +3,26 @@ import RbacHttpRuleAdapter from './adapters/RbacHttpRuleAdapter';
 import RbacHttpItemAdapter from './adapters/RbacHttpItemAdapter';
 import RbacHttpItemChildAdapter from './adapters/RbacHttpItemChildAdapter';
 
+interface RbacHttpConfiguration {
+  baseUrl: string;
+  headers: Record<string, string>;
+}
+
+interface RbacHierarchy {
+  rbacAssignments: any;
+  rbacItems: any;
+  rbacItemChildren: any;
+  rbacRules: any;
+}
+
 export default class RbacHttpAdapter {
-  constructor({ rbacHttpConfiguration }) {
+  private config: RbacHttpConfiguration;
+  private assignmentAdapter: RbacHttpAssignmentAdapter;
+  private itemAdapter: RbacHttpItemAdapter;
+  private itemChildAdapter: RbacHttpItemChildAdapter;
+  private ruleAdapter: RbacHttpRuleAdapter;
+
+  constructor({ rbacHttpConfiguration }: { rbacHttpConfiguration?: RbacHttpConfiguration }) {
     this.config = rbacHttpConfiguration || {
       baseUrl: 'http://localhost:4000',
       headers: {}
@@ -15,73 +33,71 @@ export default class RbacHttpAdapter {
     this.ruleAdapter = new RbacHttpRuleAdapter(this.config);
   }
 
-  get dependencies() {
-    return [
-      'rbacHttpConfiguration'
-    ];
+  get dependencies(): string[] {
+    return ['rbacHttpConfiguration'];
   }
 
-  async store(rbacHierachy) {
+  async store(rbacHierachy: RbacHierarchy): Promise<void> {
     await this.assignmentAdapter.store(rbacHierachy.rbacAssignments);
     await this.itemAdapter.store(rbacHierachy.rbacItems);
     await this.itemChildAdapter.store(rbacHierachy.rbacItemChildren);
     await this.ruleAdapter.store(rbacHierachy.rbacRules);
   }
 
-  async load() {
+  async load(): Promise<RbacHierarchy> {
     return {
       rbacAssignments: await this.assignmentAdapter.load(),
       rbacItems: await this.itemAdapter.load(),
       rbacItemChildren: await this.itemChildAdapter.load(),
-      rbacRules: await this.ruleAdapter.load()
+      rbacRules: await this.ruleAdapter.load(),
     };
   }
 
-  async findAllAssignments() {
+  async findAllAssignments(): Promise<any> {
     return await this.assignmentAdapter.load();
   }
 
-  async findAllItems() {
+  async findAllItems(): Promise<any> {
     return await this.itemAdapter.load();
   }
 
-  async findAllItemsChild() {
+  async findAllItemsChild(): Promise<any> {
     return await this.itemChildAdapter.load();
   }
 
-  async findAllRules() {
+  async findAllRules(): Promise<any> {
     return await this.ruleAdapter.load();
   }
 
   // Core for checkAccess
 
-  async findAssignmentsByUserId(userId) {
+  async findAssignmentsByUserId(userId: string): Promise<any> {
     return await this.assignmentAdapter.findByUserId(userId);
   }
 
-  async findItem(name) {
+  async findItem(name: string): Promise<any> {
     return await this.itemAdapter.find(name);
   }
 
-  async findItemChildrenByParent(name) {
+  async findItemChildrenByParent(name: string): Promise<any> {
     return await this.itemChildAdapter.findByParent(name);
   }
 
   // Core for management
 
-  async createAssignment(userId, role) {
+  async createAssignment(userId: string, role: string): Promise<any> {
     return await this.assignmentAdapter.create(userId, role);
   }
 
-  async findAssignment(userId, role) {
+  async findAssignment(userId: string, role: string): Promise<any> {
     return await this.assignmentAdapter.find(userId, role);
   }
 
-  async findRoles() {
+  async findRoles(): Promise<any> {
     return await this.itemAdapter.findByType('role');
   }
 
-  async deleteAssignment(userId, role) {
+  async deleteAssignment(userId: string, role?: string): Promise<any> {
     if (role) {
       return await this.assignmentAdapter.delete(userId, role);
     }
@@ -91,15 +107,15 @@ export default class RbacHttpAdapter {
 
   // Management
 
-  async createItem(name, type) {
+  async createItem(name: string, type: string): Promise<any> {
     return await this.itemAdapter.create(name, type);
   }
 
-  async createItemChild(parent, child) {
+  async createItemChild(parent: string, child: string): Promise<any> {
     return await this.itemChildAdapter.create(parent, child);
   }
 
-  async createRule(name) {
+  async createRule(name: string): Promise<any> {
     return await this.ruleAdapter.create(name);
   }
 }

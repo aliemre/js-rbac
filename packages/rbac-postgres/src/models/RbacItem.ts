@@ -1,11 +1,21 @@
 import { Model } from 'objection';
 
-class RbacItem extends Model {
-  static get tableName() {
+export interface RbacItemModel {
+  name: string;
+  type: 'permission' | 'role';
+  rule?: string;
+}
+
+class RbacItem extends Model implements RbacItemModel {
+  name!: string;
+  type!: 'permission' | 'role';
+  rule?: string;
+
+  static get tableName(): string {
     return 'rbac_items';
   }
 
-  static get idColumn() {
+  static get idColumn(): string {
     return 'name';
   }
 }

@@ -1,16 +1,21 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Schema, Model } from 'mongoose';
 
-const RbacItemSchema = mongoose.Schema({
+interface RbacItem extends Document {
+  name: string;
+  type: 'permission' | 'role';
+  rule?: string;
+}
+
+const RbacItemSchema: Schema<RbacItem> = new Schema({
   name: {
     type: String,
-    unique: true
+    unique: true,
+    required: true
   },
   type: {
     type: String,
-    enum: [
-      'permission',
-      'role'
-    ]
+    enum: ['permission', 'role'],
+    required: true
   },
   rule: {
     type: String,
@@ -18,4 +23,10 @@ const RbacItemSchema = mongoose.Schema({
   }
 });
 
-export default mongoose.model('RbacItem', RbacItemSchema, 'RbacItem');
+const RbacItemModel: Model<RbacItem> = mongoose.model<RbacItem>(
+  'RbacItem',
+  RbacItemSchema,
+  'RbacItem'
+);
+
+export default RbacItemModel;

@@ -1,12 +1,28 @@
-const { expect } = require('chai');
+import { expect } from 'chai';
 
-const { RbacMongodbAssignmentAdapter } = require('../dist');
-const { RbacMongodbItemAdapter } = require('../dist');
-const { RbacMongodbItemChildAdapter } = require('../dist');
-const { RbacMongodbRuleAdapter } = require('../dist');
-const mongoose = require('mongoose');
+// @ts-ignore
+import { RbacMongodbAssignmentAdapter } from "../dist";
+// @ts-ignore
+import { RbacMongodbItemAdapter } from "../dist";
+// @ts-ignore
+import { RbacMongodbItemChildAdapter } from "../dist";
+// @ts-ignore
+import { RbacMongodbRuleAdapter } from "../dist";
+import mongoose from 'mongoose';
+
+interface MongodbConfiguration {
+  uri: string;
+  options: mongoose.ConnectOptions;
+}
+
+interface Logger {
+  info: (message: string) => void;
+}
 
 class RbacMongodbConnection{
+  private mongodbConfiguration: MongodbConfiguration;
+  private logger: Logger;
+  
   constructor({mongodbConfiguration, logger}) {
     this.mongodbConfiguration = mongodbConfiguration;
     this.logger = logger;
@@ -49,7 +65,7 @@ describe('RbacMongodbAssignmentAdapter', () => {
     { userId: 'ilya', role: 'manager' }
   ];
 
-  const rbacAssignmet = { userId: 'igor', role: 'manager' };
+  const rbacAssignment = { userId: 'igor', role: 'manager' };
 
   it('should store many assignments', async () => {
     const adapter = new RbacMongodbAssignmentAdapter();
@@ -70,27 +86,27 @@ describe('RbacMongodbAssignmentAdapter', () => {
 
   it('should create single assignment', async () => {
     const adapter = new RbacMongodbAssignmentAdapter();
-    const result = await adapter.create(rbacAssignmet.userId, rbacAssignmet.role);
-    expect(result).to.be.an('object').that.include(rbacAssignmet);
+    const result = await adapter.create(rbacAssignment.userId, rbacAssignment.role);
+    expect(result).to.be.an('object').that.include(rbacAssignment);
   }).timeout(timeout);
 
   it('should find single assignments', async () => {
     const adapter = new RbacMongodbAssignmentAdapter();
-    const result = await adapter.find(rbacAssignmet.userId, rbacAssignmet.role);
-    expect(result).to.be.an('object').that.include(rbacAssignmet);
+    const result = await adapter.find(rbacAssignment.userId, rbacAssignment.role);
+    expect(result).to.be.an('object').that.include(rbacAssignment);
   }).timeout(timeout);
 
   it('should find all assignments by user', async () => {
     const adapter = new RbacMongodbAssignmentAdapter();
-    const result = await adapter.findByUserId(rbacAssignmet.userId);
+    const result = await adapter.findByUserId(rbacAssignment.userId);
     expect(result).to.be.an('array').that.have.length(1);
-    expect(result[0]).to.include(rbacAssignmet);
+    expect(result[0]).to.include(rbacAssignment);
   }).timeout(timeout);
 
   it('should delete single assignments', async () => {
     const adapter = new RbacMongodbAssignmentAdapter();
-    const result = await adapter.delete(rbacAssignmet.userId, rbacAssignmet.role);
-    expect(result).to.be.an('object').that.include(rbacAssignmet);
+    const result = await adapter.delete(rbacAssignment.userId, rbacAssignment.role);
+    expect(result).to.be.an('object').that.include(rbacAssignment);
     const remainData = await adapter.load();
     expect(remainData).to.be.an('array').that.have.length(2);
   }).timeout(timeout);

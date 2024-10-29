@@ -1,11 +1,20 @@
+// @ts-ignore
 import { Model } from 'objection';
 
-class RbacItemChild extends Model {
-  static get tableName() {
+export interface RbacItemChildModel {
+  parent: string;
+  child: string;
+}
+
+class RbacItemChild extends Model implements RbacItemChildModel {
+  parent!: string;
+  child!: string;
+
+  static get tableName(): string {
     return 'rbac_item_children';
   }
 
-  static get idColumn() {
+  static get idColumn(): string[] {
     return ['parent', 'child'];
   }
 }

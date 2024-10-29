@@ -1,8 +1,8 @@
 {
     "name": "@brainstaff/rbac",
-    "version": "1.0.0-beta.10",
+    "version": "1.0.0",
     "description": "RBAC library.",
-    "main": "dist/index.js",
+    "main": "dist/index.ts",
     "author": "Alexey Kornilov <alexey.kornilov@kavolorn.ru>",
     "license": "MIT",
     "publishConfig": {
@@ -15,10 +15,14 @@
     "scripts": {
         "clean": "rm -rf dist",
         "build": "rollup -c rollup.config.js",
-        "test": "mocha"
+        "test": "mocha",
+        "tsc": "tsc"
     },
     "devDependencies": {
         "mocha": "^5.2.0",
         "rollup": "^0.62.0"
+    },
+    "dependencies": {
+        "@rollup/plugin-typescript": "^12.1.1"
     }
 }

@@ -1,10 +1,21 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Schema, Model } from 'mongoose';
 
-const RbacRuleSchema = mongoose.Schema({
+interface RbacRule extends Document {
+  name: string;
+}
+
+const RbacRuleSchema: Schema<RbacRule> = new Schema({
   name: {
     type: String,
-    unique: true
+    unique: true,
+    required: true
   }
 });
 
-export default mongoose.model('RbacRule', RbacRuleSchema, 'RbacRule');
+const RbacRuleModel: Model<RbacRule> = mongoose.model<RbacRule>(
+  'RbacRule',
+  RbacRuleSchema,
+  'RbacRule'
+);
+
+export default RbacRuleModel;

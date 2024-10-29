@@ -1,13 +1,26 @@
-import mongoose from 'mongoose';
+import mongoose, { Document, Schema, Model } from 'mongoose';
 
-const RbacAssignmentSchema = mongoose.Schema({
+interface RbacAssignment extends Document {
+  role: string;
+  userId: string;
+}
+
+const RbacAssignmentSchema: Schema<RbacAssignment> = new Schema({
   role: {
     type: String,
-    ref: 'RbacItem'
+    ref: 'RbacItem',
+    required: true
   },
   userId: {
-    type: String
+    type: String,
+    required: true
   }
 });
 
-export default mongoose.model('RbacAssignment', RbacAssignmentSchema, 'RbacAssignment');
+const RbacAssignmentModel: Model<RbacAssignment> = mongoose.model<RbacAssignment>(
+  'RbacAssignment',
+  RbacAssignmentSchema,
+  'RbacAssignment'
+);
+
+export default RbacAssignmentModel;

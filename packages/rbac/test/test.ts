@@ -1,15 +1,36 @@
-const assert = require('assert');
-const {RbacInMemoryAdapter} = require("@brainstaff/rbac-in-memory");
+import * as assert from 'assert';
+// @ts-ignore
+import { RbacInMemoryAdapter } from '@brainstaff/rbac-in-memory';
+// @ts-ignore
+import { RbacManager } from '../dist';
 
-const { RbacManager } = require("../dist");
+interface RbacAssignment {
+  userId: string;
+  role: string;
+}
 
-const createRbacManager = async () => {
-  const rbacAssignments = [
+interface RbacItem {
+  name: string;
+  type: 'role' | 'permission';
+  rule?: string;
+}
+
+interface RbacItemChild {
+  parent: string;
+  child: string;
+}
+
+interface RbacRule {
+  name: string;
+}
+
+const createRbacManager = async (): Promise<RbacManager> => {
+  const rbacAssignments: RbacAssignment[] = [
     { userId: 'alexey', role: 'admin' },
     { userId: 'ilya', role: 'manager' }
   ];
 
-  const rbacItems = [
+  const rbacItems: RbacItem[] = [
     { name: 'admin', type: 'role' },
     { name: 'manager', type: 'role' },
     { name: 'user', type: 'role' },
@@ -17,7 +38,7 @@ const createRbacManager = async () => {
     { name: 'updateOwnProfile', type: 'permission', rule: 'IsOwnProfile' },
   ];
 
-  const rbacItemChildren = [
+  const rbacItemChildren: RbacItemChild[] = [
     { parent: 'admin', child: 'manager' },
     { parent: 'manager', child: 'user' },
     { parent: 'user', child: 'updateOwnProfile' },
@@ -25,12 +46,13 @@ const createRbacManager = async () => {
     { parent: 'admin', child: 'updateProfile' }
   ];
 
-  const rbacRules = [
+  const rbacRules: RbacRule[] = [
     { name: 'IsOwnProfile' }
   ];
 
   const rbacCacheAdapter = new RbacInMemoryAdapter();
   const rbacPersistentAdapter = new RbacInMemoryAdapter();
+
   await rbacPersistentAdapter.store({
     rbacAssignments,
     rbacItems,
@@ -39,10 +61,10 @@ const createRbacManager = async () => {
   });
 
   const rbacRuleFactory = {
-    createRule(name) {
+    createRule(name: string) {
       if (name === 'IsOwnProfile') {
         return {
-          execute: async (payload) => {
+          execute: async (payload: any) => {
             if (payload && payload.user && payload.user.userId && payload.profile && payload.profile.userId) {
               return payload.user.userId === payload.profile.userId;
             }
@@ -72,7 +94,10 @@ describe('RbacManager', () => {
     assert.equal(await rbacManager.checkAccess("igor", "manager"), true);
     await rbacManager.revoke("igor", "manager");
     assert.equal(await rbacManager.checkAccess("igor", "manager"), false);
-    assert.rejects(rbacManager.assign("igor", "manager2"), { name: 'Error', message: "No such role manager2."});
+    await assert.rejects(
+      rbacManager.assign("igor", "manager2"),
+      { name: 'Error', message: "No such role manager2." }
+    );
   });
 
   it('should allow everything for admin', async () => {
